@@ -59,6 +59,13 @@ canvas {
   gap: 8px;
 }
 
+.hud-readout {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 16px;
+}
+
+#score,
 #status {
   flex: 0 0 auto;
 }

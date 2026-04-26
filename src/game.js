@@ -1,16 +1,62 @@
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
+const scoreEl = document.querySelector("#score");
 const statusEl = document.querySelector("#status");
 
 const world = {
   width: canvas.width,
   height: canvas.height,
-  groundY: 440,
+  groundY: 442,
+  deathY: 620,
+};
+
+const physics = {
+  gravity: 1800,
+  groundFriction: 0.82,
+};
+
+const groundSegments = [
+  { x: 0, y: world.groundY, width: 490, height: world.height - world.groundY },
+  { x: 610, y: world.groundY, width: 350, height: world.height - world.groundY },
+];
+
+const platforms = [
+  { x: 340, y: 360, width: 170, height: 18 },
+  { x: 640, y: 350, width: 128, height: 18 },
+];
+
+const collectibleBlueprints = [
+  { x: 210, y: world.groundY - 72 },
+  { x: 660, y: world.groundY - 72 },
+  { x: 760, y: world.groundY - 72 },
+];
+
+const enemyBlueprint = {
+  x: 378,
+  y: platforms[0].y - 32,
+  width: 42,
+  height: 32,
+  leftBound: 360,
+  rightBound: 500,
+  speed: 88,
+};
+
+const gate = {
+  x: 845,
+  y: world.groundY - 96,
+  width: 42,
+  height: 96,
+};
+
+const playerStart = {
+  x: 110,
+  y: world.groundY - 56,
 };
 
 const player = {
-  x: 110,
-  y: world.groundY - 56,
+  x: playerStart.x,
+  y: playerStart.y,
+  previousY: playerStart.y,
   width: 36,
   height: 56,
   vx: 0,
@@ -20,10 +66,11 @@ const player = {
   onGround: true,
 };
 
-const physics = {
-  gravity: 1800,
-  groundFriction: 0.82,
-};
+let score = 0;
+let collectibles = [];
+let enemy = null;
+let levelWon = false;
+let message = "Find the glowing exit gate.";
 
 const keys = new Set();
 
@@ -56,7 +103,138 @@ window.addEventListener("keyup", (event) => {
   keys.delete(event.code);
 });
 
+function createCollectibles() {
+  return collectibleBlueprints.map((spark, index) => ({
+    ...spark,
+    id: `energy-spark-${index + 1}`,
+    width: 20,
+    height: 20,
+    collected: false,
+  }));
+}
+
+function createEnemy() {
+  return {
+    ...enemyBlueprint,
+    direction: 1,
+    defeated: false,
+  };
+}
+
+function resetLevel(reason = "Restarted") {
+  player.x = playerStart.x;
+  player.y = playerStart.y;
+  player.previousY = playerStart.y;
+  player.vx = 0;
+  player.vy = 0;
+  player.onGround = true;
+
+  score = 0;
+  collectibles = createCollectibles();
+  enemy = createEnemy();
+  levelWon = false;
+  message = reason;
+  updateHud();
+}
+
+function updateHud() {
+  scoreEl.textContent = `Sparks: ${score}`;
+  statusEl.textContent = message;
+}
+
+function intersects(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+function moveEnemy(dt) {
+  if (!enemy || enemy.defeated) {
+    return;
+  }
+
+  enemy.x += enemy.direction * enemy.speed * dt;
+
+  if (enemy.x <= enemy.leftBound) {
+    enemy.x = enemy.leftBound;
+    enemy.direction = 1;
+  }
+
+  if (enemy.x + enemy.width >= enemy.rightBound) {
+    enemy.x = enemy.rightBound - enemy.width;
+    enemy.direction = -1;
+  }
+}
+
+function collectSparks() {
+  for (const spark of collectibles) {
+    if (!spark.collected && intersects(player, spark)) {
+      spark.collected = true;
+      score += 1;
+      message = "Energy spark collected.";
+    }
+  }
+}
+
+function handleEnemyCollision() {
+  if (!enemy || enemy.defeated || !intersects(player, enemy)) {
+    return;
+  }
+
+  const previousBottom = player.previousY + player.height;
+  const playerBottom = player.y + player.height;
+  const enemyTop = enemy.y;
+  const stomped =
+    player.vy > 0 &&
+    previousBottom <= enemyTop + 24 &&
+    playerBottom <= enemyTop + enemy.height * 0.75;
+
+  if (stomped) {
+    enemy.defeated = true;
+    player.vy = -player.jumpForce * 0.45;
+    player.onGround = false;
+    message = "Patrol bot disabled.";
+    return;
+  }
+
+  resetLevel("Restarted after a patrol bot hit.");
+}
+
+function handleFinishGate() {
+  if (!levelWon && intersects(player, gate)) {
+    levelWon = true;
+    player.vx = 0;
+    message = "Level clear. The exit gate is open.";
+  }
+}
+
+function resolveVerticalCollision(surface) {
+  const playerBottom = player.y + player.height;
+  const previousBottom = player.previousY + player.height;
+  const wasAbove = previousBottom <= surface.y;
+  const overlapsX = player.x < surface.x + surface.width && player.x + player.width > surface.x;
+
+  if (overlapsX && wasAbove && playerBottom >= surface.y && player.vy >= 0) {
+    player.y = surface.y - player.height;
+    player.vy = 0;
+    player.onGround = true;
+    return true;
+  }
+
+  return false;
+}
+
 function update(dt) {
+  player.previousY = player.y;
+
+  if (levelWon) {
+    updateHud();
+    return;
+  }
+
   const direction = Number(isRightPressed()) - Number(isLeftPressed());
 
   if (direction !== 0) {
@@ -76,30 +254,110 @@ function update(dt) {
   const maxX = world.width - player.width - 18;
   player.x = Math.max(minX, Math.min(maxX, player.x));
 
-  const floorY = world.groundY - player.height;
-  if (player.y >= floorY) {
-    player.y = floorY;
-    player.vy = 0;
-    player.onGround = true;
+  player.onGround = false;
+
+  for (const surface of [...groundSegments, ...platforms]) {
+    if (resolveVerticalCollision(surface)) {
+      break;
+    }
   }
 
-  statusEl.textContent = player.onGround ? "Grounded" : "Jumping";
+  moveEnemy(dt);
+  collectSparks();
+  handleEnemyCollision();
+  handleFinishGate();
+
+  if (player.y > world.deathY) {
+    resetLevel("Restarted after falling into the gap.");
+    return;
+  }
+
+  if (message === "Find the glowing exit gate." || message === "Ready") {
+    message = player.onGround ? "Grounded" : "Jumping";
+  }
+
+  updateHud();
 }
 
 function drawBackground() {
   ctx.fillStyle = "#263537";
   ctx.fillRect(0, 0, world.width, world.height);
 
-  ctx.fillStyle = "#314246";
-  ctx.fillRect(0, world.groundY, world.width, world.height - world.groundY);
-
-  ctx.fillStyle = "#5e746b";
-  ctx.fillRect(0, world.groundY, world.width, 8);
+  ctx.fillStyle = "rgba(43, 31, 38, 0.65)";
+  ctx.fillRect(490, world.groundY, 120, world.height - world.groundY);
 
   ctx.fillStyle = "rgba(242, 240, 232, 0.08)";
   for (let x = 60; x < world.width; x += 130) {
     ctx.fillRect(x, 90, 52, 260);
   }
+}
+
+function drawSurfaces() {
+  for (const ground of groundSegments) {
+    ctx.fillStyle = "#314246";
+    ctx.fillRect(ground.x, ground.y, ground.width, ground.height);
+
+    ctx.fillStyle = "#5e746b";
+    ctx.fillRect(ground.x, ground.y, ground.width, 8);
+  }
+
+  for (const platform of platforms) {
+    ctx.fillStyle = "#42585a";
+    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+
+    ctx.fillStyle = "#8aa36f";
+    ctx.fillRect(platform.x, platform.y, platform.width, 5);
+  }
+}
+
+function drawCollectibles() {
+  for (const spark of collectibles) {
+    if (spark.collected) {
+      continue;
+    }
+
+    const centerX = spark.x + spark.width / 2;
+    const centerY = spark.y + spark.height / 2;
+
+    ctx.fillStyle = "#f7d66b";
+    ctx.beginPath();
+    ctx.moveTo(centerX, spark.y);
+    ctx.lineTo(spark.x + spark.width, centerY);
+    ctx.lineTo(centerX, spark.y + spark.height);
+    ctx.lineTo(spark.x, centerY);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#fff7b0";
+    ctx.fillRect(centerX - 3, centerY - 3, 6, 6);
+  }
+}
+
+function drawEnemy() {
+  if (!enemy || enemy.defeated) {
+    return;
+  }
+
+  ctx.fillStyle = "#c16f5b";
+  ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+
+  ctx.fillStyle = "#2e3436";
+  ctx.fillRect(enemy.x + 8, enemy.y + 10, 7, 7);
+  ctx.fillRect(enemy.x + enemy.width - 15, enemy.y + 10, 7, 7);
+
+  ctx.fillStyle = "#f0d6c8";
+  ctx.fillRect(enemy.x + 6, enemy.y + enemy.height - 5, enemy.width - 12, 5);
+}
+
+function drawGate() {
+  ctx.fillStyle = levelWon ? "#b8f5d0" : "#65c7d0";
+  ctx.fillRect(gate.x, gate.y, gate.width, gate.height);
+
+  ctx.fillStyle = "rgba(242, 240, 232, 0.42)";
+  ctx.fillRect(gate.x + 10, gate.y + 12, gate.width - 20, gate.height - 24);
+
+  ctx.fillStyle = "#263537";
+  ctx.fillRect(gate.x + 16, gate.y + 28, gate.width - 32, gate.height - 40);
 }
 
 function drawPlayer() {
@@ -115,6 +373,10 @@ function drawPlayer() {
 
 function draw() {
   drawBackground();
+  drawSurfaces();
+  drawCollectibles();
+  drawEnemy();
+  drawGate();
   drawPlayer();
 }
 
@@ -131,5 +393,6 @@ function loop() {
   window.setTimeout(loop, 1000 / 60);
 }
 
+resetLevel("Find the glowing exit gate.");
 draw();
 window.setTimeout(loop, 1000 / 60);
