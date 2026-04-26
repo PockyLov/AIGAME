@@ -26,9 +26,9 @@ const platforms = [
 ];
 
 const collectibleBlueprints = [
-  { x: 210, y: world.groundY - 72 },
-  { x: 660, y: world.groundY - 72 },
-  { x: 760, y: world.groundY - 72 },
+  { x: 300, y: 330 },
+  { x: 705, y: world.groundY - 72 },
+  { x: 845, y: world.groundY - 72 },
 ];
 
 const enemyBlueprint = {
@@ -36,8 +36,8 @@ const enemyBlueprint = {
   y: platforms[0].y - 32,
   width: 42,
   height: 32,
-  leftBound: 360,
-  rightBound: 500,
+  leftBound: 365,
+  rightBound: 480,
   speed: 88,
 };
 
@@ -70,7 +70,7 @@ let score = 0;
 let collectibles = [];
 let enemy = null;
 let levelWon = false;
-let message = "Find the glowing exit gate.";
+let message = "Collect the sparks, avoid side hits, reach the glowing gate.";
 
 const keys = new Set();
 
@@ -174,7 +174,7 @@ function collectSparks() {
     if (!spark.collected && intersects(player, spark)) {
       spark.collected = true;
       score += 1;
-      message = "Energy spark collected.";
+      message = "Energy spark collected. Follow the next glow.";
     }
   }
 }
@@ -196,7 +196,7 @@ function handleEnemyCollision() {
     enemy.defeated = true;
     player.vy = -player.jumpForce * 0.45;
     player.onGround = false;
-    message = "Patrol bot disabled.";
+    message = "Patrol bot disabled. Keep moving to the gate.";
     return;
   }
 
@@ -272,7 +272,7 @@ function update(dt) {
     return;
   }
 
-  if (message === "Find the glowing exit gate." || message === "Ready") {
+  if (message === "Ready") {
     message = player.onGround ? "Grounded" : "Jumping";
   }
 
@@ -283,8 +283,13 @@ function drawBackground() {
   ctx.fillStyle = "#263537";
   ctx.fillRect(0, 0, world.width, world.height);
 
-  ctx.fillStyle = "rgba(43, 31, 38, 0.65)";
+  ctx.fillStyle = "#241b25";
   ctx.fillRect(490, world.groundY, 120, world.height - world.groundY);
+
+  ctx.fillStyle = "#e8b35b";
+  for (let x = 494; x < 606; x += 24) {
+    ctx.fillRect(x, world.groundY + 8, 12, 5);
+  }
 
   ctx.fillStyle = "rgba(242, 240, 232, 0.08)";
   for (let x = 60; x < world.width; x += 130) {
@@ -294,18 +299,18 @@ function drawBackground() {
 
 function drawSurfaces() {
   for (const ground of groundSegments) {
-    ctx.fillStyle = "#314246";
+    ctx.fillStyle = "#2d4042";
     ctx.fillRect(ground.x, ground.y, ground.width, ground.height);
 
-    ctx.fillStyle = "#5e746b";
+    ctx.fillStyle = "#80a36d";
     ctx.fillRect(ground.x, ground.y, ground.width, 8);
   }
 
   for (const platform of platforms) {
-    ctx.fillStyle = "#42585a";
+    ctx.fillStyle = "#435d63";
     ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
 
-    ctx.fillStyle = "#8aa36f";
+    ctx.fillStyle = "#b0c47a";
     ctx.fillRect(platform.x, platform.y, platform.width, 5);
   }
 }
@@ -318,6 +323,11 @@ function drawCollectibles() {
 
     const centerX = spark.x + spark.width / 2;
     const centerY = spark.y + spark.height / 2;
+
+    ctx.fillStyle = "rgba(247, 214, 107, 0.22)";
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 17, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.fillStyle = "#f7d66b";
     ctx.beginPath();
@@ -338,8 +348,11 @@ function drawEnemy() {
     return;
   }
 
-  ctx.fillStyle = "#c16f5b";
+  ctx.fillStyle = "#d36b5b";
   ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+
+  ctx.fillStyle = "#ffd6a8";
+  ctx.fillRect(enemy.x + 4, enemy.y, enemy.width - 8, 4);
 
   ctx.fillStyle = "#2e3436";
   ctx.fillRect(enemy.x + 8, enemy.y + 10, 7, 7);
@@ -350,6 +363,9 @@ function drawEnemy() {
 }
 
 function drawGate() {
+  ctx.fillStyle = levelWon ? "rgba(184, 245, 208, 0.26)" : "rgba(101, 199, 208, 0.24)";
+  ctx.fillRect(gate.x - 10, gate.y - 10, gate.width + 20, gate.height + 20);
+
   ctx.fillStyle = levelWon ? "#b8f5d0" : "#65c7d0";
   ctx.fillRect(gate.x, gate.y, gate.width, gate.height);
 
@@ -393,6 +409,6 @@ function loop() {
   window.setTimeout(loop, 1000 / 60);
 }
 
-resetLevel("Find the glowing exit gate.");
+resetLevel("Collect the sparks, avoid side hits, reach the glowing gate.");
 draw();
 window.setTimeout(loop, 1000 / 60);

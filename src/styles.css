@@ -47,8 +47,8 @@ canvas {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 2px 0;
-  color: #d7d0bf;
+  padding: 14px 2px 0;
+  color: #e5decd;
   font-size: 14px;
   line-height: 1.4;
 }
@@ -63,9 +63,18 @@ canvas {
   display: flex;
   flex: 0 0 auto;
   gap: 16px;
+  font-weight: 700;
 }
 
 #score,
 #status {
   flex: 0 0 auto;
+}
+
+#score {
+  color: #f7d66b;
+}
+
+#status {
+  color: #b8f5d0;
 }
