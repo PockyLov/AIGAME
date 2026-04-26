@@ -1,0 +1,18 @@
+﻿# Project-scoped Codex configuration for AIGAME.
+# This file is intended to be used only inside this trusted project.
+
+[agents]
+max_threads = 4
+max_depth = 1
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+startup_timeout_sec = 30
+tool_timeout_sec = 120

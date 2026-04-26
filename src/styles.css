@@ -1,0 +1,64 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #151718;
+  color: #f2f0e8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(180deg, rgba(57, 89, 96, 0.2), rgba(21, 23, 24, 0.94)),
+    #151718;
+}
+
+.game-shell {
+  width: min(100%, 1040px);
+}
+
+.stage-wrap {
+  border: 1px solid rgba(242, 240, 232, 0.22);
+  background: #20292b;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #263537;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 2px 0;
+  color: #d7d0bf;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.hud div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#status {
+  flex: 0 0 auto;
+}
