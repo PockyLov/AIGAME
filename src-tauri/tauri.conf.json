@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "AIGAME",
+  "version": "0.1.0",
+  "identifier": "com.aigame.prototype",
+  "build": {
+    "beforeDevCommand": "npm run build:web && python -m http.server 1420 --directory dist",
+    "beforeBuildCommand": "npm run build:web",
+    "devUrl": "http://127.0.0.1:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "AIGAME",
+        "width": 1100,
+        "height": 760,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "nsis",
+    "icon": [
+      "icons/icon.ico"
+    ]
+  }
+}

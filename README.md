@@ -22,11 +22,19 @@ You can also open `index.html` directly in a desktop browser, but a local server
 
 ## Build
 
-There is no build step in this version. The game is a portable static web page made from:
+The web version does not require a bundler. The game is a portable static web page made from:
 
 - `index.html`
 - `src/styles.css`
 - `src/game.js`
+
+For the Tauri desktop version, copy those web files into `dist/` with:
+
+```bash
+npm run build:web
+```
+
+`dist/` is generated output and is not required for GitHub Pages.
 
 ## Deliver to Another Computer
 
@@ -38,6 +46,23 @@ Send the project folder with the files above, plus this `README.md`. On the othe
 4. Open `http://localhost:8000` in a desktop browser.
 
 The game does not require a backend, database, account system, internet connection, or absolute local path.
+
+## Share the Windows Playtest Build
+
+For a simple Windows desktop playtest, send this installer to the tester:
+
+```text
+src-tauri/target/release/bundle/nsis/AIGAME_0.1.0_x64-setup.exe
+```
+
+Recommended sharing steps:
+
+1. Build the installer with `npm run tauri:build` if it does not already exist.
+2. Send only `AIGAME_0.1.0_x64-setup.exe` to the tester.
+3. Tell the tester to run the installer, follow the prompts, and launch `AIGAME`.
+4. Ask the tester to use the keyboard controls listed below and report any launch, display, or input issues.
+
+Because this prototype is not code-signed, Windows SmartScreen may show an unsigned app warning. For trusted internal playtests, the tester can choose `More info` and then `Run anyway`. For public distribution, code signing is recommended before sharing broadly.
 
 ## Deploy to GitHub Pages
 
@@ -67,6 +92,76 @@ https://<your-github-username>.github.io/<repository-name>/
 GitHub Pages sites are publicly accessible by default. Do not publish private, licensed, or sensitive content in this repository unless you intend it to be public.
 
 This repository includes `.nojekyll` so GitHub Pages serves the static files directly without Jekyll processing.
+
+## Windows Desktop App with Tauri v2
+
+The Windows desktop version uses Tauri v2 as a minimal shell around the same static web game. It does not change the browser/GitHub Pages version.
+
+Prerequisites:
+
+- Node.js and npm
+- Rust and Cargo
+- Microsoft C++ Build Tools
+- Python, used by Tauri dev mode to serve `dist/`
+
+Install npm dependencies once:
+
+```bash
+npm install
+```
+
+Copy the web files into `dist/`:
+
+```bash
+npm run build:web
+```
+
+Run the Tauri development window:
+
+```bash
+npm run tauri:dev
+```
+
+The desktop window title is `AIGAME`, and the default window size is `1100x760`.
+
+Build a Windows desktop release:
+
+```bash
+npm run tauri:build
+```
+
+The release build creates:
+
+- Standalone app executable: `src-tauri/target/release/aigame.exe`
+- Windows installer: `src-tauri/target/release/bundle/nsis/AIGAME_0.1.0_x64-setup.exe`
+
+To install and run the desktop version on Windows:
+
+1. Run `src-tauri/target/release/bundle/nsis/AIGAME_0.1.0_x64-setup.exe`.
+2. Follow the installer prompts.
+3. Launch `AIGAME` from the installed app shortcut or Start menu entry.
+4. Use the same keyboard controls as the browser version.
+
+To share the desktop version with another Windows computer, send the installer file:
+
+```text
+src-tauri/target/release/bundle/nsis/AIGAME_0.1.0_x64-setup.exe
+```
+
+The desktop build uses the generated `dist/` folder and does not change the root `index.html` or `src/` files used by GitHub Pages. This project does not add a backend, database, login, leaderboard, or network feature for the desktop version.
+
+## Release Notes
+
+### 0.1.0
+
+Initial playable prototype release.
+
+- Original static web platformer playable in a desktop browser.
+- GitHub Pages compatible root `index.html` and `src/` structure.
+- Keyboard movement, jumping, gravity, ground collision, collection, patrol bot interaction, pit restart, and exit gate clear state.
+- Tauri v2 Windows desktop shell using the same web game files copied into `dist/`.
+- NSIS Windows installer output: `src-tauri/target/release/bundle/nsis/AIGAME_0.1.0_x64-setup.exe`.
+- No backend, database, login, leaderboard, network feature, sound, or menu system.
 
 ## Controls
 
@@ -99,12 +194,14 @@ Implemented:
 - Level clear status
 - Clearer HUD status messages
 - Stronger color contrast for sparks, platforms, hazards, patrol bot, and exit gate
+- Static web copy script for Tauri desktop packaging
+- Tauri v2 Windows desktop shell
+- NSIS Windows installer build
 
 Not implemented yet:
 
 - Sound
 - Menus
-- Build tooling
 - Backend or database
 
 ## Originality and Assets
@@ -144,3 +241,5 @@ Future assets should be original or permissively licensed, with license notes ad
 - Reaching the glowing exit gate shows the level clear message.
 - Browser console has no obvious runtime errors.
 - Project files do not depend on an absolute local path.
+- Tauri desktop dev can be run with `npm run tauri:dev`.
+- Tauri Windows installer can be built with `npm run tauri:build`.

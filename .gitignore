@@ -40,6 +40,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+src-tauri/gen/
+src-tauri/target/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -61,6 +63,11 @@ web_modules/
 
 # Output of 'npm pack'
 *.tgz
+
+# Release artifacts
+*.exe
+*.msi
+*.zip
 
 # Yarn Integrity file
 .yarn-integrity
