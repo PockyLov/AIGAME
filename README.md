@@ -39,6 +39,35 @@ Send the project folder with the files above, plus this `README.md`. On the othe
 
 The game does not require a backend, database, account system, internet connection, or absolute local path.
 
+## Deploy to GitHub Pages
+
+This project is ready for GitHub Pages as a static site from the repository root. The page uses relative paths:
+
+- `src/styles.css`
+- `src/game.js`
+
+To publish it from GitHub:
+
+1. Push the project to a GitHub repository.
+2. Open the repository on GitHub.
+3. Go to `Settings`.
+4. In the left sidebar, open `Pages`.
+5. Under `Build and deployment`, set `Source` to `Deploy from a branch`.
+6. Set `Branch` to `main`.
+7. Set the folder to `/ (root)`.
+8. Click `Save`.
+9. Wait for GitHub Pages to publish the site.
+
+The published URL usually looks like:
+
+```text
+https://<your-github-username>.github.io/<repository-name>/
+```
+
+GitHub Pages sites are publicly accessible by default. Do not publish private, licensed, or sensitive content in this repository unless you intend it to be public.
+
+This repository includes `.nojekyll` so GitHub Pages serves the static files directly without Jekyll processing.
+
 ## Controls
 
 - Move left: `ArrowLeft` or `A`
@@ -103,6 +132,7 @@ Future assets should be original or permissively licensed, with license notes ad
 ## Final Acceptance Checklist
 
 - Page opens at `http://localhost:8000`.
+- GitHub Pages source can be set to `main` branch and `/ (root)`.
 - Canvas is visible and the page is not blank.
 - Keyboard left/right movement works.
 - Keyboard jump works and the player lands again.
