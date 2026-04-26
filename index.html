@@ -8,19 +8,65 @@
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <main class="game-shell" aria-label="AIGAME platformer prototype">
+    <main class="page-shell" aria-label="AIGAME web playable">
+      <header class="playable-header">
+        <div>
+          <p class="version-label">Phase 10 Web Playable · v0.1.0</p>
+          <h1>AIGAME</h1>
+          <p class="intro-copy">
+            A small original platformer with three short levels, energy sparks, patrol bots, and glowing exit gates.
+          </p>
+        </div>
+        <div class="header-actions" aria-label="Quick actions">
+          <a href="#game" class="primary-link">Start Game</a>
+          <a href="#how-to-play" class="secondary-link">How to Play</a>
+        </div>
+      </header>
+
+      <p class="orientation-tip" aria-live="polite">
+        Mobile tip: rotate your phone sideways for the clearest play area.
+      </p>
+
+      <section class="game-shell" aria-label="AIGAME platformer prototype">
       <section class="stage-wrap">
         <canvas id="game" width="960" height="540" aria-label="Playable platformer canvas"></canvas>
       </section>
       <section class="hud" aria-label="Controls">
         <div>
           <strong>Controls</strong>
-          <span>Arrow keys or A/D to move, Space/W/Up to jump</span>
+          <span>Move: Arrow keys or A/D | Jump: Space/W/Up | Pause: P/Esc | Restart: R</span>
         </div>
         <div class="hud-readout">
           <span id="score">Sparks: 0</span>
           <span id="status" aria-live="polite">Ready</span>
         </div>
+      </section>
+      <section class="touch-controls" aria-label="Touch controls">
+        <div class="touch-cluster" aria-label="Move">
+          <button type="button" class="touch-button" data-control="left" aria-label="Move left">Left</button>
+          <button type="button" class="touch-button" data-control="right" aria-label="Move right">Right</button>
+        </div>
+        <div class="touch-cluster" aria-label="Actions">
+          <button type="button" class="touch-button" data-control="pause" aria-label="Pause">Pause</button>
+          <button type="button" class="touch-button touch-button-jump" data-control="jump" aria-label="Jump">Jump</button>
+        </div>
+      </section>
+      </section>
+
+      <section class="playable-info" id="how-to-play" aria-label="How to play AIGAME">
+        <article>
+          <h2>How to Play</h2>
+          <p>Start from the in-game menu, collect energy sparks, avoid patrol bot side hits, and reach each glowing exit gate.</p>
+        </article>
+        <article>
+          <h2>Controls</h2>
+          <p>Keyboard: Arrow keys or A/D to move, Space/W/Up to jump, P/Esc to pause, R to restart.</p>
+          <p>Touch: use the on-screen Left, Right, Jump, and Pause buttons on mobile browsers.</p>
+        </article>
+        <article>
+          <h2>Known Limits</h2>
+          <p>This is a static web playable. It has no accounts, saves, leaderboard, backend, payments, Android APK, or iOS build.</p>
+        </article>
       </section>
     </main>
     <script type="module" src="src/game.js"></script>

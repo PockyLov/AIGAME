@@ -14,20 +14,97 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  overflow-x: hidden;
 }
 
 body {
-  display: grid;
   min-height: 100vh;
-  place-items: center;
   padding: 24px;
   background:
     linear-gradient(180deg, rgba(57, 89, 96, 0.2), rgba(21, 23, 24, 0.94)),
     #151718;
 }
 
+.page-shell {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+}
+
+.playable-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 0 18px;
+}
+
+.version-label {
+  margin: 0 0 8px;
+  color: #f7d66b;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: #f2f0e8;
+  font-size: clamp(42px, 7vw, 76px);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.intro-copy {
+  max-width: 660px;
+  margin: 12px 0 0;
+  color: #e5decd;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.primary-link,
+.secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(242, 240, 232, 0.28);
+  color: #f2f0e8;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primary-link {
+  border-color: #f7d66b;
+  background: #f7d66b;
+  color: #1b1e20;
+}
+
+.secondary-link {
+  background: rgba(242, 240, 232, 0.1);
+}
+
+.orientation-tip {
+  display: none;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(247, 214, 107, 0.42);
+  background: rgba(247, 214, 107, 0.1);
+  color: #fff7b0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .game-shell {
-  width: min(100%, 1040px);
+  width: 100%;
 }
 
 .stage-wrap {
@@ -41,6 +118,7 @@ canvas {
   width: 100%;
   aspect-ratio: 16 / 9;
   background: #263537;
+  touch-action: none;
 }
 
 .hud {
@@ -57,13 +135,17 @@ canvas {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  min-width: 0;
 }
 
 .hud-readout {
   display: flex;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 16px;
   font-weight: 700;
+  text-align: right;
 }
 
 #score,
@@ -77,4 +159,140 @@ canvas {
 
 #status {
   color: #b8f5d0;
+}
+
+.touch-controls {
+  display: none;
+}
+
+.playable-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.playable-info article {
+  border-top: 1px solid rgba(242, 240, 232, 0.22);
+  padding-top: 14px;
+}
+
+.playable-info h2 {
+  margin: 0 0 8px;
+  color: #f2f0e8;
+  font-size: 18px;
+}
+
+.playable-info p {
+  margin: 0 0 8px;
+  color: #d8d0c0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 920px) {
+  body {
+    padding: 12px;
+  }
+
+  .playable-header {
+    display: block;
+    padding-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 44px;
+  }
+
+  .intro-copy {
+    font-size: 14px;
+  }
+
+  .header-actions {
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .primary-link,
+  .secondary-link {
+    flex: 1 1 132px;
+  }
+
+  .hud {
+    flex-direction: column;
+    font-size: 13px;
+  }
+
+  .hud-readout {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .touch-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding-top: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .touch-cluster {
+    display: flex;
+    gap: 10px;
+  }
+
+  .touch-button {
+    min-width: 68px;
+    min-height: 52px;
+    border: 1px solid rgba(242, 240, 232, 0.34);
+    background: #263537;
+    color: #f2f0e8;
+    font: inherit;
+    font-weight: 800;
+  }
+
+  .touch-button:active,
+  .touch-button.is-active {
+    border-color: #f7d66b;
+    background: #f7d66b;
+    color: #1b1e20;
+  }
+
+  .touch-button-jump {
+    min-width: 82px;
+  }
+
+  .playable-info {
+    grid-template-columns: 1fr;
+    margin-top: 22px;
+  }
+}
+
+@media (max-width: 920px) and (orientation: portrait) {
+  .orientation-tip {
+    display: block;
+  }
+}
+
+@media (max-width: 920px) and (orientation: landscape) {
+  body {
+    padding: 8px 12px;
+  }
+
+  .playable-header {
+    display: none;
+  }
+
+  .orientation-tip {
+    display: none;
+  }
+
+  .hud {
+    padding-top: 8px;
+  }
+
+  .touch-controls {
+    padding-top: 8px;
+  }
 }

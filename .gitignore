@@ -68,6 +68,17 @@ web_modules/
 *.exe
 *.msi
 *.zip
+*.apk
+*.aab
+*.apks
+*.jks
+*.keystore
+keystore.properties
+key.properties
+
+# Android build outputs
+src-tauri/gen/android/**/build/
+src-tauri/gen/android/**/.gradle/
 
 # Yarn Integrity file
 .yarn-integrity
