@@ -134,45 +134,48 @@ The release build creates:
 | --- | --- | --- |
 | Web | Playable | Static GitHub Pages root site. |
 | Windows | Packagable | Tauri v2 NSIS installer builds successfully. |
-| Android | Init blocked | Rust Android targets are installed, but Java, Android SDK, adb, sdkmanager, ANDROID_HOME, and NDK_HOME are still missing. |
+| Android | Init complete | Tauri Android Gradle project is generated; debug APK build is planned for a later phase. |
 | iOS | Not started | Out of scope for current phases. |
 
 ## Android Init Status
 
-Phase 13 attempted Android environment verification only. Android init was not run because required tooling is missing.
+Phase 13 retry completed Android environment verification and Tauri Android initialization. The Android Gradle project now exists at:
 
-Required environment before retrying:
+```text
+src-tauri/gen/android
+```
 
-- Java available on `PATH`
-- valid `JAVA_HOME`
-- Android SDK installed
-- valid `ANDROID_HOME`
-- Android NDK installed
-- valid `NDK_HOME`
-- `adb` available on `PATH`
-- `sdkmanager` available on `PATH`
-- Rust Android targets installed
+No Android APK/AAB was built in Phase 13. Debug APK generation is reserved for Phase 14.
 
-The Rust Android targets are currently installed:
+Current Android environment used for init:
+
+- Java/JDK: `D:\Android\Android Studio\jbr`
+- Android SDK: `D:\Android\Sdk`
+- Android SDK root: `D:\Android\Sdk`
+- Android NDK: `D:\Android\Sdk\ndk\30.0.14904198`
+- adb: `D:\Android\Sdk\platform-tools\adb.exe`
+- sdkmanager: `D:\Android\Sdk\cmdline-tools\latest\bin\sdkmanager.bat`
+
+Installed Rust Android targets:
 
 - `aarch64-linux-android`
 - `armv7-linux-androideabi`
 - `i686-linux-android`
 - `x86_64-linux-android`
 
-Expected init command after the missing environment is configured:
+Android init command used:
 
 ```bash
-npx tauri android init
+npx.cmd tauri android init
 ```
 
-Expected Phase 14 work after a successful init:
+Phase 14 can attempt:
 
 - build a debug APK
 - optionally install it with `adb install`
 - test on a real Android device
 
-Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.properties`, or Android build folders.
+Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.properties`, `local.properties`, or Android build folders.
 
 ## Current Features
 
@@ -192,7 +195,7 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 ## Known Limits
 
 - Alpha version; still small and placeholder-heavy.
-- Android APK has not been generated.
+- Android Gradle project exists, but APK has not been generated.
 - iOS is not supported.
 - No accounts.
 - No leaderboard.
@@ -208,6 +211,7 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 - Phase 10: Web playable page with mobile orientation hint and touch controls.
 - Phase 11: Android environment exploration; no APK generated.
 - Phase 12: Release page for play, download guidance, platform status, and roadmap.
+- Phase 13: Android environment setup and Tauri Android init; no APK generated.
 
 Next possible work:
 

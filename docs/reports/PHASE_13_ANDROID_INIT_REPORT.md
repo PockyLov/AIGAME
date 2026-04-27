@@ -2,17 +2,32 @@
 
 ## 1. Stage Goal
 
-Verify the Android development environment and run Tauri Android initialization only if all prerequisites are available. This phase explicitly forbids Android build, APK/AAB generation, signing, Google Play work, iOS, accounts, leaderboards, payments, backend services, and gameplay changes.
+Retry Phase 13 after the Android toolchain and Git branch issues were fixed. The goal was limited to Android environment verification and `tauri android init`.
 
-Android init was not executed because the required Android/JDK environment is incomplete and branch creation failed.
+This phase explicitly did not run Android build, generate APK/AAB files, configure signing, start Google Play work, add iOS, add accounts, add leaderboards, add payment, add backend services, or modify gameplay logic.
 
 ## 2. Changed Files
 
+Changed documentation and ignore rules:
+
 - `README.md`
-- `docs/skills/android-init-skill.md`
+- `.gitignore`
 - `docs/reports/PHASE_13_ANDROID_INIT_REPORT.md`
 
-Files intentionally not changed in this phase:
+Generated Android initialization files:
+
+- `src-tauri/gen/android/.editorconfig`
+- `src-tauri/gen/android/.gitignore`
+- `src-tauri/gen/android/build.gradle.kts`
+- `src-tauri/gen/android/gradle.properties`
+- `src-tauri/gen/android/gradlew`
+- `src-tauri/gen/android/gradlew.bat`
+- `src-tauri/gen/android/settings.gradle`
+- `src-tauri/gen/android/app/`
+- `src-tauri/gen/android/buildSrc/`
+- `src-tauri/gen/android/gradle/`
+
+Files intentionally not changed:
 
 - `index.html`
 - `src/game.js`
@@ -23,9 +38,6 @@ Files intentionally not changed in this phase:
 - `src-tauri/src/main.rs`
 - `src-tauri/src/lib.rs`
 - `scripts/copy-web.mjs`
-- `.nojekyll`
-
-Note: `index.html`, `src/styles.css`, `docs/skills/release-page-skill.md`, and `docs/reports/PHASE_12_RELEASE_PAGE_REPORT.md` were already modified/untracked from Phase 12 at the start of this phase.
 
 ## 3. Environment Check
 
@@ -53,80 +65,108 @@ Commands and results:
   - Also installed:
     - `x86_64-pc-windows-msvc`
 - `java -version`
-  - Result: fail
-  - Reason: `java` was not found.
+  - Result: pass
+  - Output: OpenJDK `21.0.10`
 - `where.exe java`
-  - Result: fail
-  - Reason: no Java executable found on PATH.
-- `$env:JAVA_HOME`
-  - Result: empty.
+  - Result: pass
+  - Output: `D:\Android\Android Studio\jbr\bin\java.exe`
 - `where.exe adb`
-  - Result: fail
-  - Reason: no adb executable found on PATH.
+  - Result: pass
+  - Output: `D:\Android\Sdk\platform-tools\adb.exe`
 - `where.exe sdkmanager`
-  - Result: fail
-  - Reason: no sdkmanager executable found on PATH.
+  - Result: pass
+  - Output: `D:\Android\Sdk\cmdline-tools\latest\bin\sdkmanager.bat`
+- `$env:JAVA_HOME`
+  - Result: pass
+  - Output: `D:\Android\Android Studio\jbr`
 - `$env:ANDROID_HOME`
-  - Result: empty.
+  - Result: pass
+  - Output: `D:\Android\Sdk`
+- `$env:ANDROID_SDK_ROOT`
+  - Result: pass
+  - Output: `D:\Android\Sdk`
 - `$env:NDK_HOME`
-  - Result: empty.
-- `%LOCALAPPDATA%\Android\Sdk`
-  - Result: missing.
-- `%LOCALAPPDATA%\Android\Sdk\platform-tools`
-  - Result: missing.
-- `%LOCALAPPDATA%\Android\Sdk\cmdline-tools`
-  - Result: missing.
-- `%LOCALAPPDATA%\Android\Sdk\build-tools`
-  - Result: missing.
-- `%LOCALAPPDATA%\Android\Sdk\ndk`
-  - Result: missing.
-- `C:\Program Files\Android\Android Studio\jbr`
-  - Result: missing.
+  - Result: pass
+  - Output: `D:\Android\Sdk\ndk\30.0.14904198`
 
-`docs/skills/android-environment-skill.md` was requested in the phase checklist but does not exist in the repository.
+Path checks:
+
+- `D:\Android\Android Studio\jbr`: exists
+- `D:\Android\Sdk`: exists
+- `D:\Android\Sdk\platform-tools`: exists
+- `D:\Android\Sdk\cmdline-tools\latest\bin`: exists
+- `D:\Android\Sdk\build-tools`: exists
+- `D:\Android\Sdk\ndk`: exists
 
 ## 4. Android Init Preconditions
 
 Required preconditions:
 
-- Java available: not met.
-- `JAVA_HOME` valid: not met.
-- `adb` available: not met.
-- `sdkmanager` available: not met.
-- `ANDROID_HOME` valid: not met.
-- `NDK_HOME` valid: not met.
+- Java available: met.
+- `JAVA_HOME` valid: met.
+- `adb` available: met.
+- `sdkmanager` available: met.
+- `ANDROID_HOME` valid: met.
+- `ANDROID_SDK_ROOT` valid: met.
+- `NDK_HOME` valid: met.
 - Rust Android targets installed: met.
-- Git working tree state controllable: not fully met.
+- Git working tree state controllable: met; current branch is `phase-13-android-init-retry`.
 
-Because multiple required conditions are missing, Android init was skipped.
+The project has no Android-specific npm script. The selected command was:
+
+```bash
+npx.cmd tauri android init
+```
+
+Reason:
+
+- `package.json` includes `@tauri-apps/cli`.
+- The local Tauri CLI is preferred over assuming a global Cargo Tauri install.
+- `npx` without `.cmd` is blocked by PowerShell execution policy on this machine, while `npx.cmd` works.
 
 ## 5. Android Init Result
 
-Android init was not executed.
+Android init was executed and succeeded.
 
-The likely command after environment setup is:
+Command:
+
+```bash
+npx.cmd tauri android init
+```
+
+Key output:
+
+- `Generating Android Studio project...`
+- `Project generated successfully!`
+- `Using installed NDK: D:\Android\Sdk\ndk\30.0.14904198`
+
+The first attempted command was:
 
 ```bash
 npx tauri android init
 ```
 
-Reason for choosing this future command:
-
-- The project uses the npm-installed Tauri CLI through `@tauri-apps/cli`.
-- `package.json` has no Android-specific script yet.
-- `npx tauri android init` uses the local project dependency rather than assuming a global Cargo Tauri command.
+It failed before reaching Tauri because PowerShell blocked `D:\npx.ps1` under the current execution policy. This was an environment shell-entry issue, not a Tauri or project code issue.
 
 ## 6. Generated Android Files
 
-No Android files were generated.
+Generated:
+
+- `src-tauri/gen/android`
+- Android Gradle project under `src-tauri/gen/android`
+- Android app module under `src-tauri/gen/android/app`
+- Android buildSrc support under `src-tauri/gen/android/buildSrc`
+- Gradle wrapper under `src-tauri/gen/android/gradle`
 
 Checks:
 
-- `src-tauri/gen/android`: not present.
+- `src-tauri/gen/android`: present.
 - `src-tauri/tauri.android.conf.json`: not generated.
-- Android Gradle project: not generated.
+- Android Gradle project: present.
 - `src-tauri/tauri.conf.json`: not modified.
 - Windows Tauri configuration: unchanged.
+
+`.gitignore` was updated because the previous rule ignored all of `src-tauri/gen/`, which hid the generated Android source project from Git. The new rule allows `src-tauri/gen/android` and `src-tauri/gen/schemas` to be tracked while still ignoring Gradle build folders, APK/AAB files, signing files, and Windows build artifacts.
 
 ## 7. Preserved Behavior
 
@@ -135,37 +175,37 @@ Preserved:
 - Web playable root path.
 - GitHub Pages static path strategy.
 - Existing game logic.
+- Existing keyboard and touch controls.
 - Existing Windows/Tauri configuration.
-- Existing Tauri NSIS build.
 - Existing package scripts.
+- Existing Tauri NSIS build capability.
 
-No Android build artifacts, APKs, AABs, keystores, or password files were generated.
+No Android build command was executed, and no APK/AAB/signing output was generated.
 
 ## 8. Commands Run
 
 Git:
 
-- `git status`
+- `git status --short`
   - Result: pass.
-  - Current branch: `feat/phase-12-release-page`.
-  - Worktree had Phase 12 modifications at phase start.
+- `git status --branch --short`
+  - Result: pass.
+  - Current branch: `phase-13-android-init-retry`.
+- `git branch --show-current`
+  - Result: pass.
+  - Output: `phase-13-android-init-retry`.
 - `git branch`
   - Result: pass.
-- `git switch -c phase-13-android-init`
-  - Result: fail.
-  - Error: `fatal: cannot lock ref 'refs/heads/phase-13-android-init': Unable to create 'D:/桌面desktop/AIGAME/.git/refs/heads/phase-13-android-init.lock': Permission denied`
 
 Project inspection:
 
-- `README.md`
-- `AGENTS.md`
-- `package.json`
-- `index.html`
-- `src/game.js`
-- `src/styles.css`
-- `src-tauri` files
-- Android/release/QA skill files
-- Phase 11 and Phase 12 reports
+- `Get-Content -Raw package.json`
+- `Get-Content -Raw src-tauri\tauri.conf.json`
+- `Get-Content -Raw src-tauri\Cargo.toml`
+- `Get-ChildItem -Force src-tauri`
+- `Test-Path src-tauri\gen\android`
+- `Test-Path src-tauri\tauri.android.conf.json`
+- `Get-Content -Raw .gitignore`
 
 Environment:
 
@@ -176,76 +216,77 @@ Environment:
 - `rustup target list --installed`
 - `java -version`
 - `where.exe java`
-- `$env:JAVA_HOME`
 - `where.exe adb`
 - `where.exe sdkmanager`
-- `$env:ANDROID_HOME`
-- `$env:NDK_HOME`
-- Android SDK/JDK path checks
+- PowerShell environment variable checks for `JAVA_HOME`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and `NDK_HOME`
+- D-drive Android SDK/JDK path checks
+
+Android init:
+
+- `npx tauri android init`
+  - Result: failed due PowerShell blocking `npx.ps1`.
+- `npx.cmd tauri android init`
+  - Result: pass.
 
 Regression:
 
 - `npm.cmd install`
-  - Result: pass.
 - `node --check src\game.js`
-  - Result: pass.
 - `npm.cmd run build`
-  - Result: pass.
 - `npm.cmd run build:web`
-  - Result: pass.
 - `npm.cmd run tauri:build`
   - Result: pass.
+  - Windows app output: `D:\桌面desktop\AIGAME\src-tauri\target\release\aigame.exe`
+  - Windows NSIS output: `D:\桌面desktop\AIGAME\src-tauri\target\release\bundle\nsis\AIGAME_0.1.0_x64-setup.exe`
 
 Forbidden commands not run:
 
-- `npm run tauri android build`
 - `npx tauri android build`
+- `npm run tauri android build`
 - `cargo tauri android build`
 
 ## 9. Regression Test Results
 
 Passed:
 
-- npm dependencies are installed/up to date.
+- npm dependencies installed/up to date.
 - JavaScript syntax check passed.
 - Web build passed.
 - `build:web` passed.
 - Windows Tauri NSIS build passed.
+- Android init succeeded.
 
-Failed / blocked:
+Failed:
 
-- Phase branch creation failed due `.git/refs/heads/phase-13-android-init.lock` permission error.
-- Android init preconditions failed due missing Java, Android SDK tools, environment variables, adb, and sdkmanager.
+- `npx tauri android init` failed only because PowerShell blocked `npx.ps1`.
+
+Not run by design:
+
+- Android build.
+- APK/AAB generation.
+- APK install with adb.
+- Android signing.
 
 ## 10. Known Issues
 
-- Cannot create the requested `phase-13-android-init` branch in the current workspace.
-- Java/JDK is not available.
-- Android SDK is not available.
-- `ANDROID_HOME` and `NDK_HOME` are not set.
-- `adb` and `sdkmanager` are not available.
-- Android Studio JBR path is missing.
-- `docs/skills/android-environment-skill.md` is referenced by the request but missing from the repo.
+- The plain `npx` PowerShell shim is blocked by execution policy. Use `npx.cmd` in PowerShell for Tauri commands on this machine.
+- `src-tauri/tauri.android.conf.json` was not generated by Tauri init; the generated Android project currently relies on the existing Tauri configuration and Gradle project.
+- Android debug APK has not been built yet.
+- No Android device install test has been performed.
 
 ## 11. Risk Notes
 
-- Running Android init without Java/SDK/NDK would likely fail or produce partial generated state.
-- Running Android init while branch creation fails and Phase 12 changes remain uncommitted would make review harder.
-- `src-tauri/gen/` is ignored; if Android source files are generated in a future phase, ignore rules may need careful review so source files are not accidentally hidden.
-- No signing files should ever be committed.
+- Generated Android launcher icons are Tauri default output and should be reviewed before public Android release work.
+- Android build may uncover additional Gradle, SDK package, or Rust linking issues in Phase 14.
+- Signing files and passwords must stay out of Git.
+- `src-tauri/gen/android/**/build/`, `.gradle`, `local.properties`, APK/AAB files, and keystores remain ignored.
 
 ## 12. Next Phase Recommendation
 
-Before Phase 14 Android debug APK:
+Phase 14 can proceed to Android debug APK only after reviewing the generated Android project. Recommended next steps:
 
-1. Fix Git branch creation or continue on a known clean branch.
-2. Commit or stash Phase 12/13 work.
-3. Install Android Studio or a compatible Android command-line SDK.
-4. Configure Java/JDK and `JAVA_HOME`.
-5. Configure `ANDROID_HOME`.
-6. Install Android platform-tools, command-line tools, build-tools, and NDK.
-7. Configure `NDK_HOME`.
-8. Confirm `java`, `adb`, and `sdkmanager` are available on PATH.
-9. Retry Android init with `npx tauri android init`.
-
-Only after Android init succeeds should a later phase attempt Android debug APK generation.
+1. Run a no-signing Android debug build command selected from the current Tauri CLI.
+2. Record the APK path if build succeeds.
+3. If an Android device is connected, run `adb devices` and optionally install the debug APK.
+4. Keep Windows and Web regression checks in the phase report.
+5. Do not create release signing material until a later explicit signing phase.
