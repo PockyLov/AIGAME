@@ -63,10 +63,21 @@ h1 {
   line-height: 1.45;
 }
 
+.intro-detail {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: #b8f5d0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
 .header-actions {
   display: flex;
   flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 10px;
+  max-width: 430px;
 }
 
 .primary-link,
@@ -105,6 +116,72 @@ h1 {
 
 .game-shell {
   width: 100%;
+}
+
+.release-section {
+  margin-top: 30px;
+}
+
+.play-section {
+  margin-top: 18px;
+}
+
+.section-heading {
+  margin-bottom: 14px;
+}
+
+.section-heading h2,
+.info-grid h2,
+.timeline h2 {
+  margin: 0;
+  color: #f2f0e8;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.section-heading p:not(.eyebrow) {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: #d8d0c0;
+  line-height: 1.5;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #f7d66b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.download-panel {
+  border: 1px solid rgba(242, 240, 232, 0.18);
+  background: rgba(32, 41, 43, 0.82);
+  padding: 18px;
+}
+
+.download-panel code {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 8px 0 12px;
+  padding: 12px;
+  border: 1px solid rgba(247, 214, 107, 0.3);
+  background: #111516;
+  color: #f7d66b;
+  font: 700 14px ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+.download-panel p {
+  margin: 0;
+  color: #d8d0c0;
+  line-height: 1.5;
+}
+
+.path-label {
+  color: #f2f0e8;
+  font-weight: 800;
 }
 
 .stage-wrap {
@@ -165,14 +242,16 @@ canvas {
   display: none;
 }
 
-.playable-info {
+.playable-info,
+.info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-top: 28px;
 }
 
-.playable-info article {
+.playable-info article,
+.info-grid article {
   border-top: 1px solid rgba(242, 240, 232, 0.22);
   padding-top: 14px;
 }
@@ -183,11 +262,46 @@ canvas {
   font-size: 18px;
 }
 
-.playable-info p {
+.playable-info p,
+.info-grid p,
+.info-grid li {
   margin: 0 0 8px;
   color: #d8d0c0;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.info-grid ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.timeline {
+  border-top: 1px solid rgba(242, 240, 232, 0.22);
+  padding-top: 18px;
+}
+
+.timeline ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline li {
+  min-height: 118px;
+  padding: 14px;
+  border: 1px solid rgba(242, 240, 232, 0.16);
+  background: rgba(32, 41, 43, 0.72);
+  color: #d8d0c0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.timeline strong {
+  color: #f2f0e8;
 }
 
 @media (max-width: 920px) {
@@ -208,9 +322,13 @@ canvas {
     font-size: 14px;
   }
 
+  .intro-detail {
+    font-size: 14px;
+  }
+
   .header-actions {
     margin-top: 14px;
-    flex-wrap: wrap;
+    max-width: none;
   }
 
   .primary-link,
@@ -263,9 +381,18 @@ canvas {
     min-width: 82px;
   }
 
-  .playable-info {
+  .playable-info,
+  .info-grid {
     grid-template-columns: 1fr;
     margin-top: 22px;
+  }
+
+  .timeline ol {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline li {
+    min-height: 0;
   }
 }
 

@@ -3,69 +3,136 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AIGAME Platformer Prototype</title>
+    <title>AIGAME - Web and Windows Platformer</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <main class="page-shell" aria-label="AIGAME web playable">
+    <main class="page-shell" aria-label="AIGAME release page">
       <header class="playable-header">
         <div>
-          <p class="version-label">Phase 10 Web Playable · v0.1.0</p>
+          <p class="version-label">Phase 12 Release Page - v0.2.0-alpha</p>
           <h1>AIGAME</h1>
-          <p class="intro-copy">
-            A small original platformer with three short levels, energy sparks, patrol bots, and glowing exit gates.
+          <p class="intro-copy">A lightweight side-scrolling platformer playable on Web and Windows.</p>
+          <p class="intro-detail">
+            Clear three compact levels, collect energy sparks, avoid patrol bot side hits, and reach the glowing exit gates.
           </p>
         </div>
         <div class="header-actions" aria-label="Quick actions">
-          <a href="#game" class="primary-link">Start Game</a>
+          <a href="#play-online" class="primary-link">Play Online</a>
           <a href="#how-to-play" class="secondary-link">How to Play</a>
+          <a href="#windows-download" class="secondary-link">Windows Download Guide</a>
         </div>
       </header>
 
-      <p class="orientation-tip" aria-live="polite">
-        Mobile tip: rotate your phone sideways for the clearest play area.
-      </p>
+      <p class="orientation-tip" aria-live="polite">Mobile tip: rotate your phone sideways for the clearest play area.</p>
 
-      <section class="game-shell" aria-label="AIGAME platformer prototype">
-      <section class="stage-wrap">
-        <canvas id="game" width="960" height="540" aria-label="Playable platformer canvas"></canvas>
-      </section>
-      <section class="hud" aria-label="Controls">
-        <div>
-          <strong>Controls</strong>
-          <span>Move: Arrow keys or A/D | Jump: Space/W/Up | Pause: P/Esc | Restart: R</span>
+      <section class="release-section play-section" id="play-online" aria-label="Play AIGAME online">
+        <div class="section-heading">
+          <p class="eyebrow">Online Playable</p>
+          <h2>Play in your browser</h2>
+          <p>Use the in-game Start Game menu, or press Enter after focusing the canvas area.</p>
         </div>
-        <div class="hud-readout">
-          <span id="score">Sparks: 0</span>
-          <span id="status" aria-live="polite">Ready</span>
-        </div>
-      </section>
-      <section class="touch-controls" aria-label="Touch controls">
-        <div class="touch-cluster" aria-label="Move">
-          <button type="button" class="touch-button" data-control="left" aria-label="Move left">Left</button>
-          <button type="button" class="touch-button" data-control="right" aria-label="Move right">Right</button>
-        </div>
-        <div class="touch-cluster" aria-label="Actions">
-          <button type="button" class="touch-button" data-control="pause" aria-label="Pause">Pause</button>
-          <button type="button" class="touch-button touch-button-jump" data-control="jump" aria-label="Jump">Jump</button>
-        </div>
-      </section>
+
+        <section class="game-shell" aria-label="AIGAME platformer prototype">
+          <section class="stage-wrap">
+            <canvas id="game" width="960" height="540" aria-label="Playable platformer canvas"></canvas>
+          </section>
+          <section class="hud" aria-label="Controls">
+            <div>
+              <strong>Controls</strong>
+              <span>Move: Arrow keys or A/D | Jump: Space/W/Up | Pause: P/Esc | Restart: R</span>
+            </div>
+            <div class="hud-readout">
+              <span id="score">Sparks: 0</span>
+              <span id="status" aria-live="polite">Ready</span>
+            </div>
+          </section>
+          <section class="touch-controls" aria-label="Touch controls">
+            <div class="touch-cluster" aria-label="Move">
+              <button type="button" class="touch-button" data-control="left" aria-label="Move left">Left</button>
+              <button type="button" class="touch-button" data-control="right" aria-label="Move right">Right</button>
+            </div>
+            <div class="touch-cluster" aria-label="Actions">
+              <button type="button" class="touch-button" data-control="pause" aria-label="Pause">Pause</button>
+              <button type="button" class="touch-button touch-button-jump" data-control="jump" aria-label="Jump">Jump</button>
+            </div>
+          </section>
+        </section>
       </section>
 
-      <section class="playable-info" id="how-to-play" aria-label="How to play AIGAME">
+      <section class="release-section download-guide" id="windows-download" aria-label="Windows download guide">
+        <div class="section-heading">
+          <p class="eyebrow">Windows Build</p>
+          <h2>Download guide</h2>
+          <p>For normal Windows playtesting, use the NSIS setup installer generated by Tauri.</p>
+        </div>
+        <div class="download-panel">
+          <p class="path-label">Recommended installer path</p>
+          <code>src-tauri/target/release/bundle/nsis/AIGAME_0.1.0_x64-setup.exe</code>
+          <p>
+            Do not download or share raw dist, target, MSI, or intermediate build folders. The current installer is
+            generated locally; uploading it to GitHub Releases is a future publishing step.
+          </p>
+        </div>
+      </section>
+
+      <section class="release-section info-grid" id="how-to-play" aria-label="How to play AIGAME">
         <article>
-          <h2>How to Play</h2>
+          <p class="eyebrow">Game</p>
+          <h2>What it is</h2>
           <p>Start from the in-game menu, collect energy sparks, avoid patrol bot side hits, and reach each glowing exit gate.</p>
+          <p>Current content includes three short levels, pause/restart flows, generated sound effects, and simple original canvas art.</p>
         </article>
         <article>
+          <p class="eyebrow">Controls</p>
           <h2>Controls</h2>
           <p>Keyboard: Arrow keys or A/D to move, Space/W/Up to jump, P/Esc to pause, R to restart.</p>
-          <p>Touch: use the on-screen Left, Right, Jump, and Pause buttons on mobile browsers.</p>
+          <p>Mobile browser: rotate sideways, then use the on-screen Left, Right, Jump, and Pause buttons.</p>
         </article>
         <article>
-          <h2>Known Limits</h2>
-          <p>This is a static web playable. It has no accounts, saves, leaderboard, backend, payments, Android APK, or iOS build.</p>
+          <p class="eyebrow">Platforms</p>
+          <h2>Status</h2>
+          <p>Web is playable through a static page. Windows can be packaged with Tauri. Android is still environment exploration. iOS has not started.</p>
+        </article>
+      </section>
+
+      <section class="release-section timeline" aria-label="Version updates">
+        <div class="section-heading">
+          <p class="eyebrow">Version Updates</p>
+          <h2>Phase history</h2>
+        </div>
+        <ol>
+          <li><strong>Phase 09:</strong> Windows polish with menus, three levels, generated audio, and Tauri packaging.</li>
+          <li><strong>Phase 10:</strong> Web playable page, mobile orientation hint, and touch controls.</li>
+          <li><strong>Phase 11:</strong> Android environment exploration; APK not generated yet.</li>
+          <li><strong>Phase 12:</strong> Release page for play, download guidance, platform status, and roadmap.</li>
+        </ol>
+      </section>
+
+      <section class="release-section info-grid" aria-label="Known limits and roadmap">
+        <article>
+          <p class="eyebrow">Known Limits</p>
+          <h2>Alpha scope</h2>
+          <p>Android APK is not generated yet. iOS is not supported. There are no accounts, leaderboards, cloud saves, payments, or backend services.</p>
+          <p>Mobile browser play still needs more real-device testing.</p>
+        </article>
+        <article>
+          <p class="eyebrow">Roadmap</p>
+          <h2>Next work</h2>
+          <ul>
+            <li>Android environment setup</li>
+            <li>Android init</li>
+            <li>Debug APK</li>
+            <li>Real device testing</li>
+            <li>More levels</li>
+            <li>Better visual polish</li>
+          </ul>
+        </article>
+        <article>
+          <p class="eyebrow">Originality</p>
+          <h2>Asset note</h2>
+          <p>AIGAME uses original canvas-drawn placeholder geometry and generated sound effects. No commercial game sprites, music, maps, or protected names are used.</p>
         </article>
       </section>
     </main>
