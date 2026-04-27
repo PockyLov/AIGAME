@@ -193,6 +193,13 @@ adb devices
 adb install -r src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk
 ```
 
+Phase 15 device check status:
+
+- `adb devices` runs successfully.
+- No connected and authorized Android device was detected.
+- The debug APK was not installed during Phase 15.
+- Next step: connect a phone with USB debugging enabled, accept the RSA authorization prompt, confirm `adb devices` lists the phone as `device`, then run the install command above.
+
 Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.properties`, `local.properties`, or Android build folders.
 
 ## Current Features
@@ -213,7 +220,7 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 ## Known Limits
 
 - Alpha version; still small and placeholder-heavy.
-- Android debug APK exists locally, but real-device testing has not been completed.
+- Android debug APK exists locally, but no authorized Android device was connected during Phase 15, so install and real-device testing are still pending.
 - iOS is not supported.
 - No accounts.
 - No leaderboard.
@@ -231,6 +238,7 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 - Phase 12: Release page for play, download guidance, platform status, and roadmap.
 - Phase 13: Android environment setup and Tauri Android init; no APK generated.
 - Phase 14: Android debug APK build for local testing.
+- Phase 15: Android real-device test attempted; no authorized adb device detected, so install and manual testing remain pending.
 
 Next possible work:
 
