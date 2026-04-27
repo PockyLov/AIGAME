@@ -134,18 +134,26 @@ The release build creates:
 | --- | --- | --- |
 | Web | Playable | Static GitHub Pages root site. |
 | Windows | Packagable | Tauri v2 NSIS installer builds successfully. |
-| Android | Init complete | Tauri Android Gradle project is generated; debug APK build is planned for a later phase. |
+| Android | Debug APK built | Tauri Android Gradle project exists and a local debug APK has been generated for device testing. |
 | iOS | Not started | Out of scope for current phases. |
 
-## Android Init Status
+## Android Debug APK Status
 
-Phase 13 retry completed Android environment verification and Tauri Android initialization. The Android Gradle project now exists at:
+Phase 13 retry completed Android environment verification and Tauri Android initialization. Phase 14 generated a local Android debug APK for testing.
+
+The Android Gradle project exists at:
 
 ```text
 src-tauri/gen/android
 ```
 
-No Android APK/AAB was built in Phase 13. Debug APK generation is reserved for Phase 14.
+The current debug APK output is:
+
+```text
+src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk
+```
+
+This is a debug/testing build, not a signed release build and not a Google Play upload artifact. Tauri also generated an ignored debug AAB during the same build; do not distribute or commit it.
 
 Current Android environment used for init:
 
@@ -163,17 +171,27 @@ Installed Rust Android targets:
 - `i686-linux-android`
 - `x86_64-linux-android`
 
-Android init command used:
+Android init command used in Phase 13:
 
 ```bash
 npx.cmd tauri android init
 ```
 
-Phase 14 can attempt:
+Android debug build command used in Phase 14:
 
-- build a debug APK
-- optionally install it with `adb install`
-- test on a real Android device
+```powershell
+$env:CARGO_TARGET_DIR='D:\AIGAME_CARGO_TARGET'
+npx.cmd tauri android build --debug
+```
+
+The ASCII `CARGO_TARGET_DIR` avoids an NDK linker issue caused by the project path containing non-ASCII characters.
+
+Optional device install after connecting and authorizing an Android device:
+
+```bash
+adb devices
+adb install -r src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk
+```
 
 Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.properties`, `local.properties`, or Android build folders.
 
@@ -195,7 +213,7 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 ## Known Limits
 
 - Alpha version; still small and placeholder-heavy.
-- Android Gradle project exists, but APK has not been generated.
+- Android debug APK exists locally, but real-device testing has not been completed.
 - iOS is not supported.
 - No accounts.
 - No leaderboard.
@@ -212,12 +230,10 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 - Phase 11: Android environment exploration; no APK generated.
 - Phase 12: Release page for play, download guidance, platform status, and roadmap.
 - Phase 13: Android environment setup and Tauri Android init; no APK generated.
+- Phase 14: Android debug APK build for local testing.
 
 Next possible work:
 
-- Android environment setup.
-- Android init.
-- Debug APK.
 - Real device testing.
 - More levels.
 - Better visual polish.
