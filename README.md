@@ -134,7 +134,7 @@ The release build creates:
 | --- | --- | --- |
 | Web | Playable | Static GitHub Pages root site. |
 | Windows | Packagable | Tauri v2 NSIS installer builds successfully. |
-| Android | Debug APK built | Tauri Android Gradle project exists and a local debug APK has been generated for device testing. |
+| Android | Debug APK built | Tauri Android Gradle project exists; Phase 16 adds a focused Android app mode for the debug APK. |
 | iOS | Not started | Out of scope for current phases. |
 
 ## Android Debug APK Status
@@ -193,12 +193,15 @@ adb devices
 adb install -r src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk
 ```
 
-Phase 15 device check status:
+Phase 15 / Phase 16 device status:
 
-- `adb devices` runs successfully.
-- No connected and authorized Android device was detected.
-- The debug APK was not installed during Phase 15.
-- Next step: connect a phone with USB debugging enabled, accept the RSA authorization prompt, confirm `adb devices` lists the phone as `device`, then run the install command above.
+- Phase 15 user update: the debug APK was installed on a real Android phone and the app opened.
+- Phase 15 issue: the Android first screen looked like the Web release / showcase page.
+- Phase 16 fix: Android/Tauri WebView now receives an `app-mode` / `android-mode` class and hides release-page-only sections in the app shell.
+- Phase 16.5 fix: Android app-mode hides Phase 12/Web/Windows release copy and uses a virtual joystick, circular Jump button, and small top-right Pause button.
+- Phase 16 rebuild: a new debug APK was generated.
+- Phase 16 / 16.5 install attempts: adb detected device `10AF5S28KB004YC`, but install was rejected on the phone with `INSTALL_FAILED_ABORTED: User rejected permissions`.
+- Next step: rerun the install command and approve the installation prompt on the phone.
 
 Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.properties`, `local.properties`, or Android build folders.
 
@@ -220,7 +223,7 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 ## Known Limits
 
 - Alpha version; still small and placeholder-heavy.
-- Android debug APK exists locally, but no authorized Android device was connected during Phase 15, so install and real-device testing are still pending.
+- Android debug APK exists locally. Phase 16.5 install was blocked by phone-side permission rejection, so full real-device app-mode and joystick verification is still pending.
 - iOS is not supported.
 - No accounts.
 - No leaderboard.
@@ -239,6 +242,8 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 - Phase 13: Android environment setup and Tauri Android init; no APK generated.
 - Phase 14: Android debug APK build for local testing.
 - Phase 15: Android real-device test attempted; no authorized adb device detected, so install and manual testing remain pending.
+- Phase 16: Android app experience polish; focused app mode added, debug APK rebuilt, reinstall blocked by phone-side permission rejection.
+- Phase 16.5: Mobile joystick and Android game layout polish; debug APK rebuilt, reinstall still blocked by phone-side permission rejection.
 
 Next possible work:
 

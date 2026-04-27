@@ -70,7 +70,16 @@ Result:
 
 ## 5. APK Install Result
 
-APK install command was not executed because `adb devices` did not show an authorized `device`.
+Update from user after Phase 15:
+
+- The debug APK was successfully installed on a real Android phone.
+- The app opens on the phone.
+- New issue found: the Android first screen looks like the Web release / showcase page rather than a focused game app.
+- Phase 15 is not fully manually verified because Android app experience polish is needed before completing device acceptance.
+
+Original automated attempt:
+
+APK install command was not executed in the Codex run because `adb devices` did not show an authorized `device`.
 
 Required install command for the next attempt:
 
@@ -80,8 +89,9 @@ adb install -r "D:\桌面desktop\AIGAME\src-tauri\gen\android\app\build\outputs\
 
 Install result:
 
-- Not installed.
-- No `INSTALL_FAILED` result was produced because installation was not attempted.
+- User-confirmed install after the Codex run: installed successfully.
+- User-confirmed launch: app opens.
+- No `INSTALL_FAILED` result was captured in the Codex run.
 
 Next user/device action:
 
@@ -93,12 +103,15 @@ Next user/device action:
 
 ## 6. Manual Device Test Checklist
 
-No real-device manual test was performed because no authorized Android device was detected.
+User-confirmed after Phase 15:
+
+- App opens: pass.
+- Startup screen is normal: fail; it looks like the Web release / showcase page, not a focused game app.
+
+Items still pending after the app-mode issue is fixed:
 
 Checklist status:
 
-- App opens: not tested.
-- Startup screen is normal: not tested.
 - Page fills the screen: not tested.
 - Game canvas is visible: not tested.
 - Touch buttons are visible: not tested.
@@ -114,15 +127,16 @@ Checklist status:
 - No crash: not tested.
 - Back button / app close behavior is normal: not tested.
 
-Do not mark these as pass until a user or tester confirms them on a physical Android device.
+Do not mark the remaining items as pass until a user or tester confirms them on a physical Android device.
 
 ## 7. Issues Found
 
-Confirmed issue:
+Confirmed issues:
 
-- No authorized Android device was detected by adb, so APK installation and device testing could not proceed.
+- During the Codex run, no authorized Android device was detected by adb, so Codex could not install the APK directly.
+- After the user installed and opened the APK, the Android first screen looked like the Web release / showcase page rather than a focused game app.
 
-No gameplay or app runtime issues were found because the APK was not installed or launched on a device.
+No gameplay runtime issues have been confirmed yet because manual game testing is paused until Android app experience polish is completed.
 
 ## 8. Preserved Behavior
 
@@ -193,7 +207,9 @@ Failed / blocked:
   - Failed because adb could not create `C:\Users\CodexSandboxOffline\.android`.
   - Retried successfully with elevated permissions.
 - APK install and manual device testing
-  - Blocked because no authorized Android device was connected.
+  - Codex-side install was blocked because no authorized Android device was connected.
+  - User later installed the APK successfully and confirmed the app opens.
+  - Manual acceptance remains blocked by Android first-screen app experience issue.
 
 Windows build output after regression:
 
@@ -203,8 +219,9 @@ Windows build output after regression:
 ## 11. Known Issues
 
 - The requested Phase 15 branch could not be created due Git ref lock permission error.
-- No Android device was connected and authorized in adb.
-- Real-device install and smoke testing are still pending.
+- No Android device was connected and authorized in adb during the Codex run.
+- User later installed the debug APK and confirmed the app opens.
+- Real-device smoke testing is not complete because Android app mode polish is needed first.
 - The APK is a large universal debug APK.
 - Android build still depends on Phase 14 workarounds if it needs to be rebuilt later:
   - `CARGO_TARGET_DIR=D:\AIGAME_CARGO_TARGET`
@@ -220,7 +237,7 @@ Windows build output after regression:
 
 ## 13. Next Phase Recommendation
 
-Continue Phase 15 once a real Android device is connected:
+Continue Android real-device validation after Phase 16 Android app experience polish:
 
 1. Connect Android phone with a data-capable USB cable.
 2. Enable Developer Options.

@@ -3,6 +3,47 @@ const ctx = canvas.getContext("2d");
 const scoreEl = document.querySelector("#score");
 const statusEl = document.querySelector("#status");
 const touchButtons = document.querySelectorAll("[data-control]");
+const stageWrap = document.querySelector(".stage-wrap");
+
+function detectShellMode() {
+  const params = new URLSearchParams(window.location.search);
+  const isTauri =
+    Boolean(window.__TAURI_INTERNALS__ || window.__TAURI__) ||
+    window.location.protocol === "tauri:" ||
+    window.location.hostname === "tauri.localhost" ||
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const isAndroidWebView = isAndroid && /; wv\)|Version\/\d+\.\d+ Chrome/i.test(navigator.userAgent);
+  const forcedAppMode = params.get("mode") === "app";
+  const androidAppMode = forcedAppMode || (isAndroid && (isTauri || isAndroidWebView));
+
+  document.body.classList.toggle("android-mode", androidAppMode);
+  document.body.classList.toggle("app-mode", androidAppMode);
+  document.body.classList.toggle("web-release-mode", !androidAppMode);
+}
+
+detectShellMode();
+
+function createMobileGameControls() {
+  if (!stageWrap || document.querySelector(".mobile-game-controls")) {
+    return;
+  }
+
+  const controls = document.createElement("section");
+  controls.className = "mobile-game-controls";
+  controls.setAttribute("aria-label", "Mobile game controls");
+  controls.innerHTML = `
+    <div class="virtual-joystick" data-joystick aria-label="Move">
+      <div class="joystick-knob" data-joystick-knob></div>
+    </div>
+    <button type="button" class="mobile-pause-button" data-mobile-pause aria-label="Pause">Pause</button>
+    <button type="button" class="mobile-jump-button" data-mobile-jump aria-label="Jump">Jump</button>
+  `;
+  stageWrap.appendChild(controls);
+}
+
+createMobileGameControls();
 
 const world = {
   width: canvas.width,
@@ -867,6 +908,124 @@ for (const button of touchButtons) {
   button.addEventListener("lostpointercapture", () => {
     button.classList.remove("is-active");
     releaseVirtualControl(control);
+  });
+}
+
+const joystick = document.querySelector("[data-joystick]");
+const joystickKnob = document.querySelector("[data-joystick-knob]");
+const mobileJumpButton = document.querySelector("[data-mobile-jump]");
+const mobilePauseButton = document.querySelector("[data-mobile-pause]");
+let joystickPointerId = null;
+
+function setJoystickDirection(clientX) {
+  if (!joystick || !joystickKnob) {
+    return;
+  }
+
+  const rect = joystick.getBoundingClientRect();
+  const radius = rect.width / 2;
+  const centerX = rect.left + radius;
+  const rawX = clientX - centerX;
+  const clampedX = Math.max(-radius + 16, Math.min(radius - 16, rawX));
+  const activation = radius * 0.28;
+
+  joystickKnob.style.transform = `translate(${clampedX}px, -50%)`;
+
+  if (clampedX < -activation) {
+    keys.add("ArrowLeft");
+    keys.delete("ArrowRight");
+  } else if (clampedX > activation) {
+    keys.add("ArrowRight");
+    keys.delete("ArrowLeft");
+  } else {
+    keys.delete("ArrowLeft");
+    keys.delete("ArrowRight");
+  }
+}
+
+function resetJoystick() {
+  joystickPointerId = null;
+  keys.delete("ArrowLeft");
+  keys.delete("ArrowRight");
+
+  if (joystickKnob) {
+    joystickKnob.style.transform = "translate(0, -50%)";
+  }
+}
+
+if (joystick) {
+  joystick.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    joystickPointerId = event.pointerId;
+    joystick.setPointerCapture(event.pointerId);
+    joystick.classList.add("is-active");
+    setJoystickDirection(event.clientX);
+  });
+
+  joystick.addEventListener("pointermove", (event) => {
+    if (event.pointerId === joystickPointerId) {
+      event.preventDefault();
+      setJoystickDirection(event.clientX);
+    }
+  });
+
+  joystick.addEventListener("pointerup", (event) => {
+    if (event.pointerId === joystickPointerId) {
+      event.preventDefault();
+      joystick.classList.remove("is-active");
+      resetJoystick();
+    }
+  });
+
+  joystick.addEventListener("pointercancel", () => {
+    joystick.classList.remove("is-active");
+    resetJoystick();
+  });
+
+  joystick.addEventListener("lostpointercapture", () => {
+    joystick.classList.remove("is-active");
+    resetJoystick();
+  });
+}
+
+if (mobileJumpButton) {
+  mobileJumpButton.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    mobileJumpButton.setPointerCapture(event.pointerId);
+    mobileJumpButton.classList.add("is-active");
+    pressVirtualControl("jump");
+  });
+
+  mobileJumpButton.addEventListener("pointerup", (event) => {
+    event.preventDefault();
+    mobileJumpButton.classList.remove("is-active");
+    releaseVirtualControl("jump");
+  });
+
+  mobileJumpButton.addEventListener("pointercancel", () => {
+    mobileJumpButton.classList.remove("is-active");
+    releaseVirtualControl("jump");
+  });
+
+  mobileJumpButton.addEventListener("lostpointercapture", () => {
+    mobileJumpButton.classList.remove("is-active");
+    releaseVirtualControl("jump");
+  });
+}
+
+if (mobilePauseButton) {
+  mobilePauseButton.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    mobilePauseButton.classList.add("is-active");
+    pressVirtualControl("pause");
+  });
+
+  mobilePauseButton.addEventListener("pointerup", () => {
+    mobilePauseButton.classList.remove("is-active");
+  });
+
+  mobilePauseButton.addEventListener("pointercancel", () => {
+    mobilePauseButton.classList.remove("is-active");
   });
 }
 

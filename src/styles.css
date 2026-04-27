@@ -184,6 +184,133 @@ h1 {
   font-weight: 800;
 }
 
+.app-mode {
+  min-height: 100vh;
+  padding: 10px;
+  background: #151718;
+}
+
+.app-mode .page-shell {
+  width: min(100%, 1080px);
+}
+
+.app-mode .playable-header {
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.app-mode h1 {
+  font-size: clamp(32px, 8vw, 54px);
+}
+
+.app-mode .version-label,
+.app-mode .intro-copy,
+.app-mode .intro-detail,
+.app-mode .header-actions,
+.app-mode .play-section > .section-heading,
+.app-mode .download-guide,
+.app-mode .info-grid,
+.app-mode .timeline {
+  display: none;
+}
+
+.app-mode .release-section,
+.app-mode .play-section {
+  margin-top: 0;
+}
+
+.app-mode .stage-wrap {
+  position: relative;
+  box-shadow: none;
+}
+
+.app-mode .touch-controls {
+  display: none;
+}
+
+.app-mode .mobile-game-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.virtual-joystick,
+.mobile-jump-button,
+.mobile-pause-button {
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.virtual-joystick {
+  position: absolute;
+  left: 20px;
+  bottom: 18px;
+  width: 118px;
+  height: 118px;
+  border: 2px solid rgba(242, 240, 232, 0.42);
+  border-radius: 999px;
+  background: rgba(15, 20, 22, 0.44);
+  box-shadow: inset 0 0 30px rgba(247, 214, 107, 0.12);
+}
+
+.joystick-knob {
+  position: absolute;
+  left: 34px;
+  top: 50%;
+  width: 50px;
+  height: 50px;
+  border: 2px solid rgba(255, 247, 176, 0.82);
+  border-radius: 999px;
+  background: rgba(247, 214, 107, 0.86);
+  transform: translate(0, -50%);
+  transition: transform 90ms ease-out;
+}
+
+.virtual-joystick.is-active .joystick-knob {
+  transition: none;
+}
+
+.mobile-jump-button {
+  position: absolute;
+  right: 22px;
+  bottom: 24px;
+  width: 92px;
+  height: 92px;
+  border: 2px solid rgba(255, 247, 176, 0.82);
+  border-radius: 999px;
+  background: rgba(247, 214, 107, 0.88);
+  color: #1b1e20;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.mobile-pause-button {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  min-width: 64px;
+  min-height: 36px;
+  border: 1px solid rgba(242, 240, 232, 0.42);
+  background: rgba(15, 20, 22, 0.66);
+  color: #f2f0e8;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mobile-jump-button:active,
+.mobile-jump-button.is-active,
+.mobile-pause-button:active,
+.mobile-pause-button.is-active {
+  border-color: #f7d66b;
+  filter: brightness(1.12);
+}
+
 .stage-wrap {
   border: 1px solid rgba(242, 240, 232, 0.22);
   background: #20292b;
@@ -239,6 +366,10 @@ canvas {
 }
 
 .touch-controls {
+  display: none;
+}
+
+.mobile-game-controls {
   display: none;
 }
 
@@ -421,5 +552,61 @@ canvas {
 
   .touch-controls {
     padding-top: 8px;
+  }
+}
+
+@media (orientation: portrait) {
+  .app-mode .orientation-tip {
+    display: block;
+  }
+}
+
+@media (orientation: landscape) {
+  .app-mode {
+    padding: 6px 10px;
+  }
+
+  .app-mode .playable-header {
+    display: flex;
+  }
+
+  .app-mode .orientation-tip {
+    display: none;
+  }
+
+  .app-mode .intro-copy {
+    display: none;
+  }
+
+  .app-mode .hud {
+    padding-top: 6px;
+  }
+
+  .app-mode .playable-header {
+    margin-bottom: 4px;
+  }
+
+  .app-mode h1 {
+    font-size: 28px;
+  }
+
+  .virtual-joystick {
+    left: 18px;
+    bottom: 14px;
+    width: 108px;
+    height: 108px;
+  }
+
+  .joystick-knob {
+    left: 31px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .mobile-jump-button {
+    right: 20px;
+    bottom: 18px;
+    width: 86px;
+    height: 86px;
   }
 }
