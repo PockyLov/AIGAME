@@ -15,6 +15,7 @@ body {
   margin: 0;
   min-height: 100%;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -185,24 +186,51 @@ h1 {
 }
 
 .app-mode {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
   min-height: 100vh;
-  padding: 10px;
-  background: #151718;
+  min-height: 100svh;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: 0;
+  background: #080a0b;
+  touch-action: none;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .app-mode .page-shell {
-  width: min(100%, 1080px);
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  display: block;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .app-mode .playable-header {
-  align-items: center;
-  padding-bottom: 10px;
+  display: none;
 }
 
 .app-mode h1 {
   font-size: clamp(32px, 8vw, 54px);
 }
 
+.app-mode .orientation-tip,
 .app-mode .version-label,
 .app-mode .intro-copy,
 .app-mode .intro-detail,
@@ -219,9 +247,70 @@ h1 {
   margin-top: 0;
 }
 
+.app-mode .play-section,
+.app-mode .game-shell {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.app-mode .game-shell {
+  display: block;
+}
+
 .app-mode .stage-wrap {
-  position: relative;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  border: 0;
   box-shadow: none;
+  background: #20292b;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.app-mode canvas {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100svh;
+  height: 100%;
+  height: 100dvh;
+  aspect-ratio: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.app-mode .hud {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
+  right: calc(max(86px, env(safe-area-inset-right)) + 8px);
+  z-index: 5;
+  padding: 0;
+  font-size: 12px;
+  pointer-events: none;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.68);
+}
+
+.app-mode .hud div:first-child {
+  display: none;
 }
 
 .app-mode .touch-controls {
@@ -236,6 +325,8 @@ h1 {
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .virtual-joystick,
@@ -243,6 +334,10 @@ h1 {
 .mobile-pause-button {
   pointer-events: auto;
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .virtual-joystick {
@@ -556,18 +651,22 @@ canvas {
 }
 
 @media (orientation: portrait) {
+  .app-mode {
+    overflow: hidden;
+  }
+
   .app-mode .orientation-tip {
-    display: block;
+    display: none;
   }
 }
 
 @media (orientation: landscape) {
   .app-mode {
-    padding: 6px 10px;
+    padding: 0;
   }
 
   .app-mode .playable-header {
-    display: flex;
+    display: none;
   }
 
   .app-mode .orientation-tip {
@@ -587,7 +686,7 @@ canvas {
   }
 
   .app-mode h1 {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .virtual-joystick {

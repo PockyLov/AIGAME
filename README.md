@@ -199,9 +199,17 @@ Phase 15 / Phase 16 device status:
 - Phase 15 issue: the Android first screen looked like the Web release / showcase page.
 - Phase 16 fix: Android/Tauri WebView now receives an `app-mode` / `android-mode` class and hides release-page-only sections in the app shell.
 - Phase 16.5 fix: Android app-mode hides Phase 12/Web/Windows release copy and uses a virtual joystick, circular Jump button, and small top-right Pause button.
-- Phase 16 rebuild: a new debug APK was generated.
-- Phase 16 / 16.5 install attempts: adb detected device `10AF5S28KB004YC`, but install was rejected on the phone with `INSTALL_FAILED_ABORTED: User rejected permissions`.
-- Next step: rerun the install command and approve the installation prompt on the phone.
+- Phase 16.6 fix: Android manifest locks the app to landscape and app-mode CSS uses a fullscreen-like landscape game layout.
+- Phase 16.7 fix: Android app-mode now uses a responsive landscape viewport. The canvas keeps a fixed logical height and expands its logical width from the actual phone landscape aspect ratio, so wider phones see more horizontal play area instead of stretching a fixed 16:9 image.
+- Phase 16.8 fix: Android app-mode now uses a true fullscreen landscape game layout. The page header, release copy, controls text, document-flow HUD space, padding, borders, and page scrolling are removed from Android app-mode; canvas, HUD, joystick, Jump, and Pause are layered over a fixed fullscreen game surface.
+- Phase 16.8 Android native polish: `MainActivity` enters sticky immersive mode to hide the status bar and navigation bar where the device allows it.
+- Phase 16.9 fix: mobile input responsiveness was improved. The joystick now writes directly to a dedicated mobile input state, the activation threshold is lower, Jump buffers immediately on `pointerdown`, Pause toggles immediately on `pointerdown`, and app-mode disables more default touch interference.
+- Phase 16 / 16.5 / 16.6 / 16.7 / 16.8 / 16.9 rebuilds: new debug APKs were generated.
+- Phase 16 / 16.5 / 16.6 install attempts: adb detected device `10AF5S28KB004YC`, but install was rejected on the phone with `INSTALL_FAILED_ABORTED: User rejected permissions`.
+- Phase 16.7 install result: adb detected device `10AF5S28KB004YC` and `adb install -r` completed with `Success`.
+- Phase 16.8 install result: adb detected device `10AF5S28KB004YC` and `adb install -r` completed with `Success`.
+- Phase 16.9 install result: adb detected device `10AF5S28KB004YC`; the first install attempt timed out, and the retry completed with `Success`.
+- Next step: open the installed app on the phone and confirm joystick, Jump, and Pause feel immediate and stable.
 
 Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.properties`, `local.properties`, or Android build folders.
 
@@ -223,7 +231,7 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 ## Known Limits
 
 - Alpha version; still small and placeholder-heavy.
-- Android debug APK exists locally. Phase 16.5 install was blocked by phone-side permission rejection, so full real-device app-mode and joystick verification is still pending.
+- Android debug APK exists locally and Phase 16.9 installed successfully on a connected phone. Full real-device confirmation of mobile input responsiveness is still pending user review.
 - iOS is not supported.
 - No accounts.
 - No leaderboard.
@@ -244,6 +252,10 @@ Do not commit APK/AAB files, keystores, passwords, `keystore.properties`, `key.p
 - Phase 15: Android real-device test attempted; no authorized adb device detected, so install and manual testing remain pending.
 - Phase 16: Android app experience polish; focused app mode added, debug APK rebuilt, reinstall blocked by phone-side permission rejection.
 - Phase 16.5: Mobile joystick and Android game layout polish; debug APK rebuilt, reinstall still blocked by phone-side permission rejection.
+- Phase 16.6: Android landscape-only app experience; manifest locks landscape, app-mode layout uses the landscape viewport, reinstall still blocked by phone-side permission rejection.
+- Phase 16.7: Android responsive landscape viewport polish; app-mode dynamically widens the game world for phone aspect ratios, debug APK rebuilt and installed successfully.
+- Phase 16.8: Android true fullscreen landscape game layout; app-mode removes webpage chrome, overlays HUD and controls, adds immersive system UI flags, debug APK rebuilt and installed successfully.
+- Phase 16.9: Mobile input responsiveness polish; joystick, Jump, and Pause use shorter pointer-based input paths, debug APK rebuilt and installed successfully.
 
 Next possible work:
 

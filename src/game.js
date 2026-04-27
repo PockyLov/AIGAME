@@ -4,6 +4,11 @@ const scoreEl = document.querySelector("#score");
 const statusEl = document.querySelector("#status");
 const touchButtons = document.querySelectorAll("[data-control]");
 const stageWrap = document.querySelector(".stage-wrap");
+const baseWorld = {
+  width: 960,
+  height: 540,
+};
+let androidAppMode = false;
 
 function detectShellMode() {
   const params = new URLSearchParams(window.location.search);
@@ -16,7 +21,7 @@ function detectShellMode() {
   const isAndroid = /Android/i.test(navigator.userAgent);
   const isAndroidWebView = isAndroid && /; wv\)|Version\/\d+\.\d+ Chrome/i.test(navigator.userAgent);
   const forcedAppMode = params.get("mode") === "app";
-  const androidAppMode = forcedAppMode || (isAndroid && (isTauri || isAndroidWebView));
+  androidAppMode = forcedAppMode || (isAndroid && (isTauri || isAndroidWebView));
 
   document.body.classList.toggle("android-mode", androidAppMode);
   document.body.classList.toggle("app-mode", androidAppMode);
@@ -46,8 +51,8 @@ function createMobileGameControls() {
 createMobileGameControls();
 
 const world = {
-  width: canvas.width,
-  height: canvas.height,
+  width: baseWorld.width,
+  height: baseWorld.height,
   deathY: 660,
 };
 
@@ -172,6 +177,10 @@ const menuButtons = {
 
 const keys = new Set();
 const justPressed = new Set();
+const mobileInput = {
+  left: false,
+  right: false,
+};
 const pointer = { x: 0, y: 0 };
 
 const player = {
@@ -202,11 +211,11 @@ let menuSelection = 0;
 let audioContext = null;
 
 function isLeftPressed() {
-  return keys.has("ArrowLeft") || keys.has("KeyA");
+  return keys.has("ArrowLeft") || keys.has("KeyA") || mobileInput.left;
 }
 
 function isRightPressed() {
-  return keys.has("ArrowRight") || keys.has("KeyD");
+  return keys.has("ArrowRight") || keys.has("KeyD") || mobileInput.right;
 }
 
 function isJumpKey(code) {
@@ -214,7 +223,41 @@ function isJumpKey(code) {
 }
 
 function getAllSurfaces() {
-  return [...currentLevel.ground, ...currentLevel.platforms];
+  return [...currentLevel.ground.map(getResponsiveSurface), ...currentLevel.platforms];
+}
+
+function getResponsiveSurface(surface) {
+  const reachesBaseEdge = surface.x + surface.width >= baseWorld.width - 1;
+
+  if (!androidAppMode || !reachesBaseEdge || world.width <= baseWorld.width) {
+    return surface;
+  }
+
+  return {
+    ...surface,
+    width: Math.max(surface.width, world.width - surface.x),
+  };
+}
+
+function resizeCanvasForViewport() {
+  const nextHeight = baseWorld.height;
+  let nextWidth = baseWorld.width;
+
+  if (androidAppMode && stageWrap) {
+    const rect = stageWrap.getBoundingClientRect();
+
+    if (rect.width > 0 && rect.height > 0) {
+      const aspect = rect.width / rect.height;
+      nextWidth = Math.max(baseWorld.width, Math.round(nextHeight * aspect));
+    }
+  }
+
+  if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+    canvas.width = nextWidth;
+    canvas.height = nextHeight;
+    world.width = nextWidth;
+    world.height = nextHeight;
+  }
 }
 
 function ensureAudio() {
@@ -594,9 +637,9 @@ function pressVirtualControl(control) {
   ensureAudio();
 
   if (control === "left") {
-    keys.add("ArrowLeft");
+    mobileInput.left = true;
   } else if (control === "right") {
-    keys.add("ArrowRight");
+    mobileInput.right = true;
   } else if (control === "jump") {
     justPressed.add("Space");
     keys.add("Space");
@@ -607,11 +650,42 @@ function pressVirtualControl(control) {
 
 function releaseVirtualControl(control) {
   if (control === "left") {
-    keys.delete("ArrowLeft");
+    mobileInput.left = false;
   } else if (control === "right") {
-    keys.delete("ArrowRight");
+    mobileInput.right = false;
   } else if (control === "jump") {
     keys.delete("Space");
+  }
+}
+
+function triggerVirtualJump() {
+  ensureAudio();
+  keys.add("Space");
+
+  if (appState === "playing") {
+    player.jumpBufferTimer = physics.jumpBuffer;
+    return;
+  }
+
+  justPressed.add("Space");
+}
+
+function releaseVirtualJump() {
+  keys.delete("Space");
+}
+
+function triggerVirtualPause() {
+  ensureAudio();
+
+  if (appState === "playing") {
+    appState = "paused";
+    message = "Paused.";
+    menuSelection = 0;
+    updateHud();
+  } else if (appState === "paused") {
+    performAction("resume");
+  } else {
+    justPressed.add("KeyP");
   }
 }
 
@@ -644,7 +718,7 @@ function drawBackground() {
 }
 
 function drawHazards() {
-  const sortedGround = [...currentLevel.ground].sort((a, b) => a.x - b.x);
+  const sortedGround = currentLevel.ground.map(getResponsiveSurface).sort((a, b) => a.x - b.x);
   for (let index = 0; index < sortedGround.length - 1; index += 1) {
     const current = sortedGround[index];
     const next = sortedGround[index + 1];
@@ -663,7 +737,7 @@ function drawHazards() {
 }
 
 function drawSurfaces() {
-  for (const ground of currentLevel.ground) {
+  for (const ground of currentLevel.ground.map(getResponsiveSurface)) {
     ctx.fillStyle = "#2d4042";
     ctx.fillRect(ground.x, ground.y, ground.width, ground.height);
     ctx.fillStyle = "#84ad74";
@@ -774,9 +848,9 @@ function drawOverlay(title, lines, buttons) {
   ctx.fillStyle = "rgba(13, 16, 17, 0.78)";
   ctx.fillRect(0, 0, world.width, world.height);
 
-  const panelX = 250;
-  const panelY = 72;
   const panelWidth = 460;
+  const panelX = (world.width - panelWidth) / 2;
+  const panelY = 72;
   ctx.fillStyle = "#20292b";
   ctx.fillRect(panelX, panelY, panelWidth, 390);
   ctx.strokeStyle = "rgba(242, 240, 232, 0.28)";
@@ -864,6 +938,20 @@ window.addEventListener("keyup", (event) => {
   keys.delete(event.code);
 });
 
+window.addEventListener("resize", () => {
+  resizeCanvasForViewport();
+});
+
+window.addEventListener("orientationchange", () => {
+  window.setTimeout(resizeCanvasForViewport, 120);
+});
+
+window.addEventListener("contextmenu", (event) => {
+  if (androidAppMode) {
+    event.preventDefault();
+  }
+});
+
 canvas.addEventListener("mousemove", (event) => {
   const point = getCanvasPoint(event);
   pointer.x = point.x;
@@ -927,26 +1015,26 @@ function setJoystickDirection(clientX) {
   const centerX = rect.left + radius;
   const rawX = clientX - centerX;
   const clampedX = Math.max(-radius + 16, Math.min(radius - 16, rawX));
-  const activation = radius * 0.28;
+  const activation = radius * 0.16;
 
   joystickKnob.style.transform = `translate(${clampedX}px, -50%)`;
 
   if (clampedX < -activation) {
-    keys.add("ArrowLeft");
-    keys.delete("ArrowRight");
+    mobileInput.left = true;
+    mobileInput.right = false;
   } else if (clampedX > activation) {
-    keys.add("ArrowRight");
-    keys.delete("ArrowLeft");
+    mobileInput.right = true;
+    mobileInput.left = false;
   } else {
-    keys.delete("ArrowLeft");
-    keys.delete("ArrowRight");
+    mobileInput.left = false;
+    mobileInput.right = false;
   }
 }
 
 function resetJoystick() {
   joystickPointerId = null;
-  keys.delete("ArrowLeft");
-  keys.delete("ArrowRight");
+  mobileInput.left = false;
+  mobileInput.right = false;
 
   if (joystickKnob) {
     joystickKnob.style.transform = "translate(0, -50%)";
@@ -993,23 +1081,23 @@ if (mobileJumpButton) {
     event.preventDefault();
     mobileJumpButton.setPointerCapture(event.pointerId);
     mobileJumpButton.classList.add("is-active");
-    pressVirtualControl("jump");
+    triggerVirtualJump();
   });
 
   mobileJumpButton.addEventListener("pointerup", (event) => {
     event.preventDefault();
     mobileJumpButton.classList.remove("is-active");
-    releaseVirtualControl("jump");
+    releaseVirtualJump();
   });
 
   mobileJumpButton.addEventListener("pointercancel", () => {
     mobileJumpButton.classList.remove("is-active");
-    releaseVirtualControl("jump");
+    releaseVirtualJump();
   });
 
   mobileJumpButton.addEventListener("lostpointercapture", () => {
     mobileJumpButton.classList.remove("is-active");
-    releaseVirtualControl("jump");
+    releaseVirtualJump();
   });
 }
 
@@ -1017,7 +1105,7 @@ if (mobilePauseButton) {
   mobilePauseButton.addEventListener("pointerdown", (event) => {
     event.preventDefault();
     mobilePauseButton.classList.add("is-active");
-    pressVirtualControl("pause");
+    triggerVirtualPause();
   });
 
   mobilePauseButton.addEventListener("pointerup", () => {
@@ -1042,6 +1130,7 @@ function loop() {
   window.setTimeout(loop, 1000 / 60);
 }
 
+resizeCanvasForViewport();
 currentLevel = levels[levelIndex];
 totalSparks = currentLevel.sparks.length;
 collectibles = createCollectibles();
